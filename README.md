@@ -71,6 +71,11 @@ Specify all dependencies loaded via Node.JS.
 
 > Check [NPM](https://npmjs.org/doc/json.html) for more details.
 
+## Requirement
+
+HTML5 saveAs() interface is required to export large table(over 256kB?).
+FileSaver.js (https://github.com/eligrey/FileSaver.js) is a really good implementation for this interface.
+
 ## Contributing
 
 Check [CONTRIBUTING.md](https://github.com/rainabba/jquery-table2excel/blob/master/CONTRIBUTING.md)
