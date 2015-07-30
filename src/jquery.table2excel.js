@@ -75,7 +75,8 @@
             if ( $.isArray(table) ) {
                 for (i in table) {
                     //fullTemplate += e.template.sheet.head + "{worksheet" + i + "}" + e.template.sheet.tail;
-                    fullTemplate += e.template.sheet.head + "Table" + i + "" + e.template.sheet.tail;
+                    //fullTemplate += e.template.sheet.head + "Table" + i + "" + e.template.sheet.tail;
+                    fullTemplate += e.template.sheet.head + e.ctx.worksheet + "_" + i + "" + e.template.sheet.tail;
                 }
             }
 
@@ -94,6 +95,8 @@
             }
             delete e.ctx.table;
 
+            fullTemplate = e.format(fullTemplate, e.ctx);
+
             if (typeof msie !== "undefined" && msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
             {
                 if (typeof Blob !== "undefined") {
@@ -106,14 +109,20 @@
                     //otherwise use the iframe and save
                     //requires a blank iframe on page called txtArea1
                     txtArea1.document.open("text/html", "replace");
-                    txtArea1.document.write(e.format(fullTemplate, e.ctx));
+                    txtArea1.document.write(fullTemplate);
+                    // txtArea1.document.write(e.format(fullTemplate, e.ctx));
                     txtArea1.document.close();
                     txtArea1.focus();
                     sa = txtArea1.document.execCommand("SaveAs", true, getFileName(e.settings) );
                 }
 
+            } else if (typeof saveAs != "undefined") {
+                var blob = new Blob([fullTemplate], {type: "application/vnd.ms-excel"});
+                saveAs(blob, getFileName(e.settings)); 
             } else {
-                link = e.uri + e.base64(e.format(fullTemplate, e.ctx));
+/**/
+                // link = e.uri + e.base64(e.format(fullTemplate, e.ctx));
+                link = e.uri + e.base64(fullTemplate);
                 a = document.createElement("a");
                 a.download = getFileName(e.settings);
                 a.href = link;
@@ -122,7 +131,9 @@
 
                 a.click();
 
-                document.body.removeChild(a);
+		document.body.removeChild(a);
+/**/
+//                window.open('data:application/vnd.ms-excel,' + encodeURIComponent(fullTemplate));
             }
 
             return true;
@@ -130,7 +141,7 @@
     };
 
     function getFileName(settings) {
-        return ( settings.filename ? settings.filename : "table2excel") + ".xlsx";
+        return ( settings.filename ? settings.filename : "table2excel") + ".xls";
     }
 
     $.fn[ pluginName ] = function ( options ) {
